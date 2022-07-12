@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../services/database.js');
-const TaskModel = require('../models/task.models.js');
+const Model = require('../models/index.models.js');
 const {createTask, updateTask, deleteTask}= require('../controller/task.controller');
+
+const TaskModel = Model.Task;
 
 router.route('/')
     .post(createTask)
@@ -14,7 +16,7 @@ router.route('/')
 router.route('/:id')
     .delete(deleteTask)
     .get(async(req, res, next) => {
-        const {id} = request.params;
+        const {id} = req.params;
         const TaskFind = await TaskModel.findAll({
             where: 
             {

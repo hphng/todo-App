@@ -1,11 +1,12 @@
-const TaskModel = require('../models/task.models.js');
+const Model = require('../models/index.models.js');
 const bodyparser = require('body-parser');
 const express = require('express');
+
+const TaskModel = Model.Task;
 
 
 const createTask = async(req, res, next) => {
     const newTask = req.body;
-    console.log(req.body);
     await TaskModel.create(newTask);
     res.send('created!');
 
@@ -24,7 +25,7 @@ const updateTask = async(req, res, next) => {
     if(description) {updateTask.description = description};
     if(User_id){updateTask.User_id = User_id};
 
-    await TaskModel.save();
+    await updateTask.save();
     res.send('updated');
 
     

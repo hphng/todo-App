@@ -10,5 +10,14 @@ const Task = db.define('tasks', {
     freezeTableName: true,
     tableName: 'tasks'
     })
+    
 db.sync();
+
+// User.hasMany(Task, 
+//     {foreignKey: 'User_id'
+// });
+
+// Task.belongsTo(User);
+
+
 module.exports = Task;
