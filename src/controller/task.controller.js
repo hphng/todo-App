@@ -48,42 +48,51 @@ const getTaskbyTitle = async(req, res, next) => {
 
 const getTaskbyUsername = async(req, res, next) => {
     const {username} = req.params;
-    console.log(username)
-    const UserFind = await UserModel.findOne({
-        where:
-        {
-            username: username
-        }
-    })
+    // console.log(username)
+    // const UserFind = await UserModel.findOne({
+    //     where:
+    //     {
+    //         username: username
+    //     }
+    // })
 
 
 
 
-//     const abc = await TaskModel.findAll({include: 
-//     [{
-//         model: UserModel,
-//         required: true,
-//         where: {
-//             'username': username
+const allTasksFind = await TaskModel.findAll({include: 
+    [{
+        model: UserModel,
+        //required: true,
+        where: {
+            'username': username
+        },
+        attributes: [],
+    },
+],
+})
+
+    if(allTasksFind.length != 0) 
+        {return res.send(allTasksFind)}
+    else
+    {
+        res.sendStatus(404);
+    }
+        
+
+
+
+//     if(UserFind == null) 
+//         return res.send('cannot find user');
+//     const id  = UserFind.id;
+//     console.log(UserFind.username)
+//     const TaskFind = await TaskModel.findAll({
+//         where:
+//         {
+//             User_id: id
 //         }
-//     },
-// ],
-// })
-// console.log(JSON.stringify(abc, null, 2))
-
-
-    if(UserFind == null) 
-        return res.send('cannot find user');
-    const id  = UserFind.id;
-    console.log(UserFind.username)
-    const TaskFind = await TaskModel.findAll({
-        where:
-        {
-            User_id: id
-        }
-    })
-    if(TaskFind == null) return res.send('user does not have tasks!')
-    res.send(TaskFind)
+//     })
+//     if(TaskFind == null) return res.send('user does not have tasks!')
+//     res.send(TaskFind)
 }
 
 const updateTask = async(req, res, next) => {
