@@ -5,11 +5,11 @@ const router = express.Router();
 const db = require('../services/database.js');
 const Model = require('../models/index.models.js');
 const {createUser, updateUser, deleteUser, 
-    displayAuthUser, getAllUser, getUserbyID}= require('../controller/user.controller');
+    displayAuthUser, getAllUser, getUserbyID,
+    getUsersandTasks}= require('../controller/user.controller');
 
 const {AuthUser, authenticateToken} = require('../controller/authenticate.controller')
 
-const {getUsersandTasks} = require('../controller/tasks&users.controller')
 router.route('/')
     .post(createUser)
     .get(getAllUser)

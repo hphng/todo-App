@@ -80,6 +80,16 @@ const deleteUser = async(req, res, next) => {
     res.send('deleted!')
 }
 
+const getUsersandTasks = async(req, res, next )=> {
+    const All = await UserModel.findAll({
+        include: [{
+            model: TaskModel,
+            required: true
+        },
+    ],
+    })
+    res.send(All);
+}
 const displayAuthUser = async(req,res, next) => {
     const nameFind = req.user.name;
     const UserFind = await UserModel.findOne({
@@ -101,5 +111,6 @@ module.exports = {
     deleteUser,
     displayAuthUser,
     getAllUser,
-    getUserbyID
+    getUserbyID,
+    getUsersandTasks
 }
