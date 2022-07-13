@@ -5,6 +5,7 @@ const Task = require('./task.models');
 const User = db.define('users', {
     username: Sequelize.STRING,
     description: Sequelize.TEXT,
+    password: Sequelize.STRING
 }, {
     freezeTableName: true,
     tableName: 'users'

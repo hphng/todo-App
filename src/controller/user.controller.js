@@ -1,14 +1,23 @@
 const Model = require('../models/index.models.js');
-const bodyparser = require('body-parser');
-const AuthUser = require('./authenticate.controller');
+const bcrypt = require('bcrypt');
 
 
 const UserModel = Model.User;
+const TaskModel = Model.Task;
 
 const createUser = async(req, res, next) => {
     const newUser = req.body;
-    console.log(req.body);
+    try {
+        const salt = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(req.body.password, salt)
+        newUser.password = hashPassword;
+
+    }
+    catch {
+        res.status(500).send();
+    }
     await UserModel.create(newUser);
+    
     res.send('created!');
 
 }
@@ -30,10 +39,22 @@ const getUserbyID = async(req,res, next) => {
         res.send(UserFind);
 }
 
+// const getUsersandTasks = async(req, res, next )=> {
+//     const All = await UserModel.findAll({
+//         include: [{
+//             model: TaskModel,
+//             required: true
+//         },
+//     ],
+//     })
+//     res.send(All);
+// }
+
+
 const updateUser = async(req, res, next) => {
     const {id} = req.params;
     console.log(id);
-    const {username, description} = req.body;
+    const {username, description,password} = req.body;
     
     const updateUser = await UserModel.findOne({
         where: {
@@ -43,6 +64,7 @@ const updateUser = async(req, res, next) => {
 
     if(username) {updateUser.username = username};
     if(description) {updateUser.description = description};
+    if(password) {updateUser.password = password};
     await updateUser.save();
 
     res.send('updated');

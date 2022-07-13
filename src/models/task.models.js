@@ -4,7 +4,8 @@ const db = require('../services/database.js');
 const Task = db.define('tasks', {
     title: Sequelize.STRING,
     description: Sequelize.TEXT,
-    User_id: Sequelize.INTEGER
+    User_id: Sequelize.INTEGER,
+    status: Sequelize.STRING,
 }, 
     {
     freezeTableName: true,
