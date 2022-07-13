@@ -4,13 +4,19 @@ const db = require('../services/database.js');
 const Model = require('../models/index.models.js');
 const {createTask, updateTask, deleteTask, 
     getAllTask, getTaskbyID, getTaskbyTitle,
-    getTaskbyUsername}= require('../controller/task.controller');
+    getTaskbyUsername,
+    filterAllTaskStatus,
+    filterTaskStatus}= require('../controller/task.controller');
 
 const TaskModel = Model.Task;
 
 router.route('/')
     .post(createTask)
     .get(getAllTask)
+
+
+router.route('/search')
+    .get(filterAllTaskStatus)
 
 router.route('/title/:title')
     .get(getTaskbyTitle)
@@ -22,6 +28,9 @@ router.route('/id/:id')
 
 router.route('/username/:username')
     .get(getTaskbyUsername)
+
+router.route('/username/:username/search')
+    .get(filterTaskStatus)
 
     
 module.exports = router;

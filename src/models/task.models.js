@@ -5,7 +5,10 @@ const Task = db.define('tasks', {
     title: Sequelize.STRING,
     description: Sequelize.TEXT,
     User_id: Sequelize.INTEGER,
-    status: Sequelize.STRING,
+    status: {
+        type: Sequelize.ENUM,
+        values: ['done','doing', 'todo']
+    }
 }, 
     {
     freezeTableName: true,

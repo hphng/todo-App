@@ -116,6 +116,36 @@ const updateTask = async(req, res, next) => {
     
 }
 
+const filterAllTaskStatus = async(req, res, next) => {
+    const status = req.query.status;
+    console.log(status)
+    const TaskFind = await TaskModel.findAll({
+        where: {
+            status: status
+        }
+    })
+    console.log(TaskFind)
+    res.send(TaskFind)
+}
+
+const filterTaskStatus = async(req,res, next) => {
+    const status = req.query.status;
+    const {username} = req.params;
+    const UserTasksFind = await TaskModel.findAll({include: 
+        [{
+            model: UserModel,
+            //required: true,
+            where: {
+                'username': username,
+            },
+            attributes: [],
+        },
+    ],
+    })
+    const TaskFindFinal = await UserTasksFind.filter(task => task.status == status)
+    res.send(TaskFindFinal)
+}
+
 const deleteTask = async(req, res, next) => {
     const {id} = req.params;
     await TaskModel.destroy({
@@ -133,5 +163,7 @@ module.exports = {
     getAllTask,
     getTaskbyID,
     getTaskbyTitle,
-    getTaskbyUsername
+    getTaskbyUsername,
+    filterAllTaskStatus,
+    filterTaskStatus
 }
