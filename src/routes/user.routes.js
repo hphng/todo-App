@@ -8,14 +8,16 @@ const {createUser, updateUser, deleteUser,
     displayAuthUser, getAllUser, getUserbyID,
     getUsersandTasks}= require('../controller/user.controller');
 
-const {AuthUser, authenticateToken} = require('../controller/authenticate.controller')
+const {authUser, authenticateToken} = require('../controller/authenticate.controller')
 
 router.route('/')
-    .post(createUser)
     .get(getAllUser)
 
+router.route('/register')
+    .post(createUser)
+
 router.route('/login')
-    .post(AuthUser)
+    .post(authUser)
     .get(authenticateToken, displayAuthUser)
 
 router.route('/all')

@@ -8,35 +8,35 @@ const bcrypt = require('bcrypt');
 
 function authenticateToken(req, res, next)
 {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    const AUTHHEADER = req.headers['authorization'];
+    const TOKEN = AUTHHEADER && AUTHHEADER.split(' ')[1];
 
-    if(token == null) res.send.sendStatus(401);
+    if(TOKEN == null) res.send.sendStatus(401);
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    jwt.verify(TOKEN, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
         if(err) return res.sendStatus(403);
         req.user = user;
         next();
     })
 }
 
-const AuthUser = async(req, res, next) =>
+const authUser = async(req, res, next) =>
 {
-    const findUser = await UserModel.findOne({
+    const FINDUSER = await UserModel.findOne({
         where: {
             username: req.body.username
         }
     })
-    if(findUser == null)
+    if(FINDUSER == null)
     {
         return res.status(400).send("cannot find user")
     }
     try{
-        if(await bcrypt.compare(req.body.password, findUser.password)){
-            const username = req.body.username;
-            const user = {name: username}
-            const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-            res.json({accessToken: accessToken})
+        if(await bcrypt.compare(req.body.password, FINDUSER.password)){
+            const USERNAME = req.body.username;
+            const USER = {name: USERNAME}
+            const ACCESSTOKEN = jwt.sign(USER, process.env.ACCESS_TOKEN_SECRET)
+            res.json({accessToken: ACCESSTOKEN})
         }
         else{
             res.send('not allowed')
@@ -47,4 +47,4 @@ const AuthUser = async(req, res, next) =>
     }
 }
 
-module.exports = {AuthUser, authenticateToken};
+module.exports = {authUser, authenticateToken};

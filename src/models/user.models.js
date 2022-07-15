@@ -4,18 +4,13 @@ const Task = require('./task.models');
 
 const User = db.define('users', {
     username: Sequelize.STRING,
-    description: Sequelize.TEXT,
-    password: Sequelize.STRING
+    password: Sequelize.STRING,
+    description: Sequelize.TEXT
 }, {
     freezeTableName: true,
     tableName: 'users'
 });
 
-// User.hasMany(Task, 
-//     {foreignKey: 'User_id'
-// });
-
-// Task.belongsTo(User);
 
 db.sync()
 module.exports = User;

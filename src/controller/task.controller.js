@@ -5,154 +5,167 @@ const express = require('express');
 const TaskModel = Model.Task;
 const UserModel = Model.User;
 
-
+//create task
 const createTask = async(req, res, next) => {
-    const newTask = req.body;
-    await TaskModel.create(newTask);
+    try{
+    const NEWTASK = req.body;
+    await TaskModel.create(NEWTASK);
     res.send('created!');
+    }
+    catch{
+        res.status(500).send()
+    }
 
 }
 
+
+// return all task
 const getAllTask = async(req, res, next) => {
-    const table = await (TaskModel.findAll())
-    res.send(table)
+    const TABLE = await TaskModel.findAll({
+        order: [
+            ['id', 'ASC']
+        ],
+    })
+    res.send(TABLE)
 }
 
+//return tasks by ID
 const getTaskbyID = async(req, res, next) => {
-    const {id} = req.params;
-    const TaskFind = await TaskModel.findAll({
+    try{
+    const {id: ID} = req.params;
+    const TASKFIND = await TaskModel.findAll({
         where: 
         {
-            id: id
+            id: ID
         }
     })
-    console.log(TaskFind)
-    if(TaskFind == null )
+    if(TASKFIND == null )
         return res.send('cannot find task')
-    res.send(TaskFind);
+    res.send(TASKFIND);
+}
+catch{
+    res.status(500).send();
+}
 }
 
+//get task by title
 const getTaskbyTitle = async(req, res, next) => {
-    const {title } = req.params;
-    const TaskFind = await TaskModel.findAll({
+
+    const {title: TITLE } = req.params;
+    const TASKFIND = await TaskModel.findAll({
         where:
         {
-            title: title
+            title: TITLE
         }
     })
-    console.log(title)
-    if(TaskFind == null || !isNaN(title))
+    if(TASKFIND.length == 0 || !isNaN(TITLE))
         return res.send('cannot find task');
-    res.send(TaskFind);
+    res.send(TASKFIND);
 }
 
+//get tasks by username
 const getTaskbyUsername = async(req, res, next) => {
-    const {username} = req.params;
-    // console.log(username)
-    // const UserFind = await UserModel.findOne({
-    //     where:
-    //     {
-    //         username: username
-    //     }
-    // })
-
-
-
-
-const allTasksFind = await TaskModel.findAll({include: 
+    try{
+    const {username: USERNAME} = req.params;
+    const ALLTASKFIND = await TaskModel.findAll({include: 
     [{
         model: UserModel,
         //required: true,
         where: {
-            'username': username
+            'username': USERNAME
         },
         attributes: [],
     },
 ],
 })
 
-    if(allTasksFind.length != 0) 
-        {return res.send(allTasksFind)}
+    if(ALLTASKFIND.length != 0) 
+        {return res.send(ALLTASKFIND)}
     else
     {
         res.sendStatus(404);
     }
+}
+    catch{
+        res.status(500).send();
+    }
         
-
-
-
-//     if(UserFind == null) 
-//         return res.send('cannot find user');
-//     const id  = UserFind.id;
-//     console.log(UserFind.username)
-//     const TaskFind = await TaskModel.findAll({
-//         where:
-//         {
-//             User_id: id
-//         }
-//     })
-//     if(TaskFind == null) return res.send('user does not have tasks!')
-//     res.send(TaskFind)
 }
 
+//update task
 const updateTask = async(req, res, next) => {
-    const {id} = req.params;
-    const {title, description, User_id, status} = req.body;
+    const {id: ID} = req.params;
+    const {title: TITLE, description: DESCRIPTION, User_id: USER_ID, status: STATUS} = req.body;
     
-    const updateTask = await TaskModel.findAll({
+    const UPDATETASK = await TaskModel.findOne({
         where: {
-            id: id
-        }
+            id: ID
+        },
     })
 
-    if(title) {updateTask.title = title};
-    if(description) {updateTask.description = description};
-    if(User_id){updateTask.User_id = User_id};
-    if(status) {updateTask.status = status}
-
-    await updateTask.save();
+    if(TITLE) {UPDATETASK.title = TITLE};
+    if(DESCRIPTION) {UPDATETASK.description = DESCRIPTION};
+    if(USER_ID){UPDATETASK.User_id = USER_ID};
+    if(STATUS) {UPDATETASK.status = STATUS}
+    console.log(UPDATETASK)
+    await UPDATETASK.save();
     res.send('updated');
 
     
 }
 
+//filter task regardless of username
 const filterAllTaskStatus = async(req, res, next) => {
-    const status = req.query.status;
-    console.log(status)
-    const TaskFind = await TaskModel.findAll({
+    const STATUS = req.query.status;
+    const TASKFIND = await TaskModel.findAll({
         where: {
-            status: status
+            status: STATUS
         }
     })
-    console.log(TaskFind)
-    res.send(TaskFind)
+    res.send(TASKFIND)
 }
 
+//filter tasks depend on username
 const filterTaskStatus = async(req,res, next) => {
-    const status = req.query.status;
-    const {username} = req.params;
-    const UserTasksFind = await TaskModel.findAll({include: 
+    try{
+    const STATUS = req.query.status;
+    const {username: USERNAME} = req.params;
+    const USERTASKSFIND = await TaskModel.findAll({include: 
         [{
             model: UserModel,
             //required: true,
             where: {
-                'username': username,
+                'username': USERNAME,
             },
             attributes: [],
         },
     ],
     })
-    const TaskFindFinal = await UserTasksFind.filter(task => task.status == status)
-    res.send(TaskFindFinal)
+    const TASKFINDFINAL = await USERTASKSFIND.filter(task => task.status == STATUS)
+    res.send(TASKFINDFINAL)
+}
+catch{
+    res.status(500).send()
+}
 }
 
+//delete task
 const deleteTask = async(req, res, next) => {
-    const {id} = req.params;
+    const {id: ID} = req.params;
+    const TASKFIND =await TaskModel.findOne({
+        where: {
+            id: ID
+        }
+    })
+    if(TASKFIND == null)
+        res.send(`cannot find task with ID = ${ID}`)
+    
     await TaskModel.destroy({
         where: {
-            id: id
+            id: ID
         }
-    });
+    })
+    res.send('deleted!')
 
 }
 

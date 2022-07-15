@@ -6,66 +6,64 @@ const UserModel = Model.User;
 const TaskModel = Model.Task;
 
 const createUser = async(req, res, next) => {
-    const newUser = req.body;
+    const NEWUSER = req.body;
     try {
-        const salt = await bcrypt.genSalt();
-        const hashPassword = await bcrypt.hash(req.body.password, salt)
-        newUser.password = hashPassword;
-
+        const SALT = await bcrypt.genSalt();
+        const HASHPASSWORD = await bcrypt.hash(req.body.password, SALT)
+        NEWUSER.password = HASHPASSWORD;
+        await UserModel.create(NEWUSER);
+    
+        res.send('created!');
     }
     catch {
         res.status(500).send();
     }
-    await UserModel.create(newUser);
-    
-    res.send('created!');
 
 }
 
 const getAllUser = async(req, res, next) => {
-    const table = await(UserModel.findAll());
-    res.send(table);
+    const TABLE = await(UserModel.findAll());
+    res.send(TABLE);
 }
 
 const getUserbyID = async(req,res, next) => {
-    const {id : Userid} = req.params;
-        const UserFind = await UserModel.findAll({
+    try{
+    const {id : USERID} = req.params;
+        const USERFIND = await UserModel.findAll({
             where: 
             {
-                id: Userid
+                id: USERID
             }
         })
-        
-        res.send(UserFind);
+        if(USERFIND.length == 0){
+            return res.send(`cannot find user with ID ${USERID}`)
+        }
+        return res.send(USERFIND);
+    }
+    catch{
+        res.status(500).send();
+    }
 }
 
-// const getUsersandTasks = async(req, res, next )=> {
-//     const All = await UserModel.findAll({
-//         include: [{
-//             model: TaskModel,
-//             required: true
-//         },
-//     ],
-//     })
-//     res.send(All);
-// }
 
 
 const updateUser = async(req, res, next) => {
-    const {id} = req.params;
-    console.log(id);
-    const {username, description,password} = req.body;
-    
-    const updateUser = await UserModel.findOne({
+    const {id: ID} = req.params;
+    const {username, password, description} = req.body;
+    const FINDUSER = await UserModel.findOne({
         where: {
-            id: id
+            id: ID
         }
     })
 
-    if(username) {updateUser.username = username};
-    if(description) {updateUser.description = description};
-    if(password) {updateUser.password = password};
-    await updateUser.save();
+    if(username) {FINDUSER.username = username};
+    if(password) {
+        const SALT = await bcrypt.genSalt();
+        const HASHPASSWORD = await bcrypt.hash(JSON.stringify(password), SALT)
+        FINDUSER.password = HASHPASSWORD;
+    };
+    if(description) {FINDUSER.description = description};
+    await FINDUSER.save();
 
     res.send('updated');
 }
@@ -81,26 +79,25 @@ const deleteUser = async(req, res, next) => {
 }
 
 const getUsersandTasks = async(req, res, next )=> {
-    const All = await UserModel.findAll({
+    const ALL = await UserModel.findAll({
         include: [{
             model: TaskModel,
-            required: true
+            required: false
         },
     ],
     })
-    res.send(All);
+    res.send(ALL);
 }
 const displayAuthUser = async(req,res, next) => {
-    const nameFind = req.user.name;
-    const UserFind = await UserModel.findOne({
+    const NAMEFIND = req.user.name;
+    const USERFIND = await UserModel.findOne({
         where:
         {
-            username: nameFind
+            username: NAMEFIND
         }
     })
-    console.log(UserFind);
     //const result = posts.filter(post => post.username ===  req.user.name)
-    res.send(UserFind);
+    res.send(USERFIND);
 }
 
 
